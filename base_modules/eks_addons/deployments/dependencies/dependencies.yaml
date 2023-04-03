@@ -1,0 +1,17 @@
+apiVersion: v2
+name: Addons to install
+version: 1.0.0
+dependencies:
+  - name: cluster-autoscaler
+    version: 9.10.8
+    repository: https://kubernetes.github.io/autoscaler
+    # https://docs.aws.amazon.com/eks/latest/userguide/autoscaling.html
+  - name: aws-load-balancer-controller
+    version: 1.3.2
+    repository: https://aws.github.io/eks-charts
+    # https://docs.aws.amazon.com/eks/latest/userguide/aws-load-balancer-controller.html
+    # https://aws.amazon.com/premiumsupport/knowledge-center/eks-load-balancer-controller-subnets/
+  - name: aws-efs-csi-driver
+    version: 2.2.0
+    repository: https://kubernetes-sigs.github.io/aws-efs-csi-driver
+    # https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html

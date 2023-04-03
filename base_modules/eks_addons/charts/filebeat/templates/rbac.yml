@@ -1,0 +1,29 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: filebeat-{{ .Values.environment }}
+subjects:
+- kind: ServiceAccount
+  name: filebeat-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+roleRef:
+  kind: ClusterRole
+  name: filebeat-{{ .Values.environment }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: filebeat-{{ .Values.environment }}
+  labels:
+    k8s-app: filebeat-{{ .Values.environment }}
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources:
+  - namespaces
+  - pods
+  verbs:
+  - get
+  - watch
+  - list

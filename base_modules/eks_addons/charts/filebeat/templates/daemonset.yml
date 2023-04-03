@@ -1,0 +1,76 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: filebeat-{{ .Values.environment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    k8s-app: filebeat-{{ .Values.environment }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: filebeat-{{ .Values.environment }}
+  template:
+    metadata:
+      labels:
+        k8s-app: filebeat-{{ .Values.environment }}
+    spec:
+    {{- with .Values.daemonset.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: filebeat-{{ .Values.environment }}
+      terminationGracePeriodSeconds: 30
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: filebeat-{{ .Values.environment }}
+        image: {{ .Values.image }}
+        args: [
+          "-c", "/etc/filebeat.yml",
+          "-e",
+        ]
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+{{- if .Values.extraEnvs | default .Values.daemonset.extraEnvs }}
+{{ toYaml ( .Values.extraEnvs | default .Values.daemonset.extraEnvs ) | indent 8 }}
+{{- end }}
+        securityContext:{{ toYaml ( .Values.podSecurityContext | default .Values.daemonset.securityContext ) | nindent 10 }}
+        resources:
+{{ toYaml ( .Values.resources | default .Values.daemonset.resources )  | indent 10 }}
+        volumeMounts:
+        - name: config
+          mountPath: /etc/filebeat.yml
+          readOnly: true
+          subPath: filebeat.yml
+        - name: data
+          mountPath: /usr/share/filebeat/data
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: varlog
+          mountPath: /var/log
+          readOnly: true
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 0600
+          name: filebeat-config-{{ .Values.environment }}
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: varlog
+        hostPath:
+          path: /var/log
+      # data folder stores a registry of read status for all files, so we don't send everything again on a Filebeat pod restart
+      - name: data
+        hostPath:
+          path: /var/lib/filebeat-data
+          type: DirectoryOrCreate
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate

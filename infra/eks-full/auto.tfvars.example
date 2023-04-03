@@ -1,0 +1,10 @@
+# Copy this to an *.auto.tfvars file to define your own aws_provider profile.
+# This will be based on your api credentials, which are stored in "~/.aws/credentials" by default.
+# If your credentials file is kept elsewhere, you can uncomment aws_cred_file and specify the path.
+# If you work in multiple AWS accounts, you will need to change the profile name as needed in the auto file.
+# If you want to have a tfvars file per AWS account, you can do so  and then pass the appropriate file at the
+# commandline.
+# You will need proper api access to the account/vpc/region.
+
+aws_provider_profile = "profile_name_from_file"
+#aws_cred_file        = ""

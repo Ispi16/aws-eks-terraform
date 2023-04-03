@@ -1,0 +1,109 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: platform-monitoring-gw
+  namespace: monitoring
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: platform-monitoring-gw-http
+      protocol: HTTP
+    hosts:
+    - grafana-test.com
+    - prometheus-test.com
+    - kiali-test.com
+    - jaeger-test.com
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: platform-grafana-dev
+  namespace: monitoring
+spec:
+  hosts:
+  - grafana-test.com
+  gateways:
+  - platform-monitoring-gw
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: grafana.monitoring.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: platform-prometheus-dev
+  namespace: monitoring
+spec:
+  hosts:
+  - prometheus-test.com
+  gateways:
+  - platform-monitoring-gw
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: prometheus-server.monitoring.svc.cluster.local
+        port:
+          number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: platform-prometheus-dev
+  namespace: monitoring
+spec:
+  host: prometheus-server.monitoring.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: platform-kiali-dev
+  namespace: monitoring
+spec:
+  hosts:
+  - kiali-test.com
+  gateways:
+  - platform-monitoring-gw
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: kiali.istio-system.svc.cluster.local
+        port:
+          number: 20001
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: platform-jaeger-dev
+  namespace: monitoring
+spec:
+  hosts:
+  - jaeger-test.com
+  gateways:
+  - platform-monitoring-gw
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: tracing.istio-system.svc.cluster.local
+        port:
+          number: 80

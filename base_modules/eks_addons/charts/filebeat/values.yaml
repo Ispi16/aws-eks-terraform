@@ -1,0 +1,58 @@
+image: docker.elastic.co/beats/filebeat:7.16.1 
+environment: dev # Add environment for filebeat logs
+namespace: monitoring # Add namespace to deploy filebeat
+
+daemonset:
+  # Annotations to apply to the daemonset
+  annotations: {}
+  # additionals labels
+  labels: {}
+  affinity: {}
+  # Include the daemonset
+  enabled: true
+  # Extra environment variables for Filebeat container.
+  envFrom: []
+  # - configMapRef:
+  #     name: config-secret
+  extraEnvs: []
+  imagePullSecrets:
+    - name: "github"
+
+  securityContext:
+    runAsUser: 0
+    privileged: false
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "100Mi"
+    limits:
+      cpu: "1000m"
+      memory: "200Mi"
+  tolerations: []
+
+index: "logindex-%{[fields.index]}-%{+yyyy.MM.dd}"
+hosts: '["https://elastic.com:9200"]' # Modify the name of the ElaticSearch to put logs
+username: '' # Add ElasticSearch username
+password: '' # Add ElasticSearch password
+
+filebeatConfig: []
+    # filebeat.yml: |
+    #   filebeat.inputs:
+    #   - type: container
+    #     paths:
+    #       - /var/log/containers/*common-apps*.log
+    #     exclude_files:
+    #       - .*istio.*
+    #     processors:
+    #     - add_cloud_metadata:
+    #     - add_host_metadata:
+    #     - add_kubernetes_metadata:
+    #         host: ${NODE_NAME}
+    #         namespace: app
+    #         matchers:
+    #         - logs_path:
+    #             logs_path: "/var/log/containers/"
+    #     fields:
+    #       index: common-apps
+    #     json.keys_under_root: true
+    #     json.add_error_key: true

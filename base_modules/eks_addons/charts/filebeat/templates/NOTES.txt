@@ -1,0 +1,1 @@
+You deployed filebeat for logging. Don't forget to create the github secret.

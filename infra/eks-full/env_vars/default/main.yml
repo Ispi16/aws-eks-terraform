@@ -1,0 +1,83 @@
+# AWS Infradev variables
+
+# Environment specific data
+environment: "infradev"
+base_environment: "infradev"
+region: "eu-west-1"
+
+# EKS control plane specific data
+cluster_name: "dev-eks-test-cluster"
+cluster_additional_policies: []
+ng_additional_policies: []
+vpc_id: "vpc"
+subnet_ids:
+ - "subnet-1"
+ - "subnet-2"
+eks_version: "1.23"
+kms_deletion_window_in_days: 30
+kms_enable_key_rotation: true
+enable_private_access: true
+enable_public_access: true
+eks_log_types:
+  - "api"
+  - "audit"
+  - "authenticator"
+  - "controllerManager"
+  - "scheduler"
+create_oidc_provider: true
+cluster_timeout: "30m"
+public_allow_cidr_blocks: ["0.0.0.0/0"]
+custom_tags: {}
+
+# EKS nodegroup specific data
+managed_node_groups:
+  - name: "ng1"
+    modify_ng: true
+    min_size: 1
+    max_size: 10
+    desired_size: 1
+    instance_types: ["m4.large", "t2.micro", "t2.nano", "m5a.large"]
+    ssh_key_name: "Ansible"
+    capacity_type: "SPOT"
+    volume_size: 50
+    volume_type: "gp3"
+    ami_id: ""
+    bootstrap_extra_args: ""
+    k8s_taints: []
+    k8s_labels:
+      WorkerType: "SPOT"
+    ng_role_arn: ""
+    ng_security_group_id: []
+    ng_timeout: "40m"
+    ebs_optimized: true
+    associate_public_ip_address: false
+    device_name: "/dev/xvda"
+    monitoring: true
+
+# EKS auth specific data
+manage_aws_auth: true
+map_users: []
+map_accounts: []
+map_roles: []
+
+# EKS addons specific data
+addon_coredns_version: ""
+addon_kube_proxy_version: ""
+addon_awscni_version: ""
+addon_ebs_version: ""
+helm_defaults: {}
+istio-base: {}
+istiod: {}
+istio-cni: {}
+istio-ingress: {}
+istio-egress: {}
+prometheus: {}
+grafana: {}
+filebeat: {}
+kafka: {}
+mysql: {}
+jaeger: {}
+kiali: {}
+argocd: {}
+install_opentelemetry_operator: true
+install_metrics_server: true

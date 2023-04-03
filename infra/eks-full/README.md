@@ -1,0 +1,3 @@
+# AWS EKS Terraform
+
+Amazon Elastic Kubernetes Service (Amazon EKS) is a managed service that you can use to run Kubernetes on AWS without needing to install, operate, and maintain your own Kubernetes control plane or nodes. Kubernetes is an open-source system for automating the deployment, scaling, and management of containerized applications. It runs and scales the Kubernetes control plane across multiple AWS Availability Zones to ensure high availability. Automatically scales control plane instances based on load, detects and replaces unhealthy control plane instances, and it provides automated version updates and patching for them.
